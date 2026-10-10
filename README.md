@@ -27,8 +27,10 @@ Set the value to `true` only in an isolated test server. Startup then writes `Gl
 
 Recognized aliases are removed from chat. Players without the permission receive a denial message. These are chat aliases for test use, not registered slash commands.
 
+A source fixture checks alias recognition, permission denial, missing arguments and authorized flight with a synthetic player. An isolated Axolotl-PM server probe repeated those paths using a synthetic Player and a real `PlayerChatEvent`. Connected-player behavior remains unverified.
+
 ## Build and support
 
-The [build workflow](.github/workflows/build.yml) runs PHPStan at maximum level, lints PHP and builds a PHAR with pinned [DevTools](https://github.com/NhanAZ/DevTools). It verifies the manifest, config, source and digest. The workflow does not publish a release artifact. The root [LICENSE](LICENSE) contains the project's GPL-3.0 terms.
+The [build workflow](.github/workflows/build.yml) runs PHPStan at maximum level, lints PHP, checks the chat alias fixture and builds a PHAR with pinned [DevTools](https://github.com/NhanAZ/DevTools). It verifies the manifest, config, source and digest. The workflow does not publish a release artifact. The root [LICENSE](LICENSE) contains the project's GPL-3.0 terms.
 
 Report issues through [GitHub Issues](https://github.com/NhanAZ-Plugins/OhMyTest/issues) or [NhanAZ Discord](https://discord.gg/j2X83ujT6c).
