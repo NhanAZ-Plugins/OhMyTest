@@ -4,17 +4,9 @@ declare(strict_types=1);
 
 namespace NhanAZ\OhMyTest;
 
-use NhanAZ\libBedrock\tools\GenStringToIdMeta;
-use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\event\block\BlockBreakEvent;
-use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
-use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\player\PlayerJoinEvent;
-use pocketmine\event\player\PlayerMoveEvent;
-use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\nbt\tag\CompoundTag;
@@ -23,108 +15,118 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
-use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
 
 class Main extends PluginBase implements Listener {
-	use SingletonTrait;
+    use SingletonTrait;
 
-	protected function onEnable(): void {
-		self::setInstance($this);
-		$this->getServer()->getPluginManager()->registerEvents($this, $this);
-		$this->getScheduler()->scheduleRepeatingTask(new TestTask($this), 20);
-		WorldAZ::loadWorlds();
-		WorldAZ::generateTerrain();
+    private const PERMISSION = 'ohmytest.experimental';
+    private const CHAT_COMMANDS = ['tp', 'nbt', 'setnbt', 'egd', 'vd', 'ws', 'fly', 'pause', 'resume'];
 
-		DumpAZ::Glyph();
-		DumpAZ::Permissions();
-		# DumpAZ::IdItem();
-	}
+    protected function onEnable(): void {
+        self::setInstance($this);
+        if ($this->getConfig()->get('enable-experimental-features', false) !== true) {
+            $this->getLogger()->notice('Experimental features are disabled in config.yml.');
+            return;
+        }
 
-	public function onJoin(PlayerJoinEvent $event): void {
-	}
+        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->getScheduler()->scheduleRepeatingTask(new TestTask(), 20);
+        WorldAZ::loadWorlds();
+        WorldAZ::generateTerrain();
+        DumpAZ::Glyph();
+        DumpAZ::Permissions();
+    }
 
-	public function onBreak(BlockBreakEvent $event): void {
-	}
+    public function onChat(PlayerChatEvent $event): void {
+        $parts = preg_split('/\s+/', trim($event->getMessage())) ?: [];
+        $command = $parts[0] ?? '';
+        if (!in_array($command, self::CHAT_COMMANDS, true)) {
+            return;
+        }
 
-	public function onMove(PlayerMoveEvent $event) {
-	}
+        $event->cancel();
+        $player = $event->getPlayer();
+        if (!$player->hasPermission(self::PERMISSION)) {
+            $player->sendMessage('This experimental command requires operator permission.');
+            return;
+        }
 
+        switch ($command) {
+            case 'tp':
+                $worldName = $parts[1] ?? '';
+                if ($worldName === '') {
+                    $player->sendMessage('Usage: tp <world>');
+                    return;
+                }
+                $world = $this->getServer()->getWorldManager()->getWorldByName($worldName);
+                if (!$world instanceof World) {
+                    $player->sendMessage("World not loaded: $worldName");
+                    return;
+                }
+                $player->teleport($world->getSafeSpawn());
+                $player->sendMessage('Moved to ' . $world->getDisplayName());
+                return;
 
-	public function onPlace(BlockPlaceEvent $event): void {
-		$blocks = $event->getTransaction()->getBlocks();
-		foreach ($blocks as [$x, $y, $z, $block]) {
-			if (!$block instanceof Block) return;
-			// Play with block
-		}
-	}
+            case 'nbt':
+                $tag = $player->getInventory()->getItemInHand()->getCustomBlockData();
+                $player->sendMessage($tag?->getString('blockdata', 'No blockdata value') ?? 'No blockdata value');
+                return;
 
-	public function onInteract(PlayerInteractEvent $event): void {
-	}
+            case 'setnbt':
+                $key = $parts[1] ?? '';
+                $value = implode(' ', array_slice($parts, 2));
+                if ($key === '' || $value === '') {
+                    $player->sendMessage('Usage: setnbt <key> <value>');
+                    return;
+                }
+                $item = $player->getInventory()->getItemInHand();
+                $tag = $item->getCustomBlockData() ?? new CompoundTag();
+                $tag->setString($key, $value);
+                $item->setCustomBlockData($tag);
+                $player->getInventory()->setItemInHand($item);
+                return;
 
-	public function onPacket(DataPacketReceiveEvent $event): void {
-	}
+            case 'egd':
+                $item = VanillaBlocks::OAK_LOG()->asItem();
+                $item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::UNBREAKING(), 3));
+                $item->setCustomName('Custom test item');
+                $item->setCount(30);
+                $player->getInventory()->addItem($item);
+                return;
 
-	public function onChat(PlayerChatEvent $event): void {
-		$player = $event->getPlayer();
-		$msg = explode(" ", $event->getMessage());
-		$commands = [
-			"tp" => function ($player, $world) {
-				$world = $this->getServer()->getWorldManager()->getWorldByName($world);
-				if (!$world instanceof World) {
-					$player->sendMessage($world . "is NULL!");
-					return;
-				}
-				$player->teleport($world->getSafeSpawn());
-				$player->sendMessage("Đã dịch chuyển đến thế giới: " . $world->getDisplayName());
-			},
-			"nbt" => function ($player) {
-				var_dump($player->getInventory()->getItemInHand()->getCustomBlockData()->getString("blockdata"));
-			},
-			"setnbt" => function ($player, $key, $value) {
-				$nbt = new CompoundTag();
-				$nbt->setString($key, $value);
-				$item = $player->getInventory()->getItemInHand();
-				$item->setCustomBlockData($nbt);
-				$player->getInventory()->setItemInHand($item);
-			},
-			"egd" => function ($player) {
-				$item = VanillaBlocks::OAK_LOG()->asItem();
-				$item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::UNBREAKING(), 3));
-				$item->setCustomName("§cCustommm Names Nhân AZ");
-				$item->setLore(["§bLoreeee"]);
-				$item->setCount(30);
-				$player->getInventory()->addItem($item);
-			},
-			"vd" => function ($player) {
-				var_dump($player->getInventory()->getItemInHand()->jsonSerialize());
-			},
-			"ws" => function ($player) {
-				$worlds = $this->getServer()->getWorldManager()->getWorlds();
-				$out = [];
-				foreach ($worlds as $world) {
-					array_push($out, $world->getDisplayName());
-				}
-				$player->sendMessage(implode(", ", $out));
-			},
-			"fly" => function(Player $player) {
-				$player->setFlying(true);
-				$player->setAllowFlight(true);
-			},
-			"pause" => function(Player $player) {
-				$pk = LevelEventPacket::create(1, LevelEvent::PAUSE_GAME, $player->getPosition());
-				NetworkBroadcastUtils::broadcastPackets($this->getServer()->getOnlinePlayers(), [$pk]);
-				$player->sendMessage("Paused!");
-			},
-			"resume" => function(Player $player) {
-				$pk = LevelEventPacket::create(0, LevelEvent::PAUSE_GAME, $player->getPosition());
-				NetworkBroadcastUtils::broadcastPackets($this->getServer()->getOnlinePlayers(), [$pk]);
-				$player->sendMessage("Resumed!");
-			}
-		];
-		if (isset($commands[$msg[0]])) {
-			$commands[$msg[0]]($player, ...array_slice($msg, 1));
-		}
-	}
+            case 'vd':
+                $item = $player->getInventory()->getItemInHand();
+                $player->sendMessage($item->getName() . ' x' . $item->getCount() . ' (type ' . $item->getTypeId() . ')');
+                return;
+
+            case 'ws':
+                $names = [];
+                foreach ($this->getServer()->getWorldManager()->getWorlds() as $world) {
+                    $names[] = $world->getDisplayName();
+                }
+                $player->sendMessage(implode(', ', $names));
+                return;
+
+            case 'fly':
+                $player->setAllowFlight(true);
+                $player->setFlying(true);
+                return;
+
+            case 'pause':
+                $this->broadcastPause($player, 1);
+                return;
+
+            case 'resume':
+                $this->broadcastPause($player, 0);
+                return;
+        }
+    }
+
+    private function broadcastPause(Player $player, int $state): void {
+        $packet = LevelEventPacket::create(LevelEvent::PAUSE_GAME, $state, $player->getPosition());
+        NetworkBroadcastUtils::broadcastPackets($this->getServer()->getOnlinePlayers(), [$packet]);
+        $player->sendMessage($state === 1 ? 'Paused.' : 'Resumed.');
+    }
 }

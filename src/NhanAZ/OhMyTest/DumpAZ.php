@@ -19,11 +19,14 @@ class DumpAZ {
 	public static function Glyph(string $glyph = "E0"): void {
 		$filename = basename("glyph_$glyph", ".png");
 		$file = fopen(Main::getInstance()->getDataFolder() . "/Glyph.md", "w");
+		if ($file === false) {
+			throw new \RuntimeException("Unable to write Glyph.md");
+		}
 		fwrite($file, "# glyph_$glyph.png" . "\n");
 		$startChar = hexdec(substr($filename, strrpos($filename, "_") + 1) . "00");
 		$messages = array_fill(0, self::GRID * self::GRID, "");
 		for ($i = 0; $i < self::GRID * self::GRID; $i++) {
-			$z = ($i - ($i % self::GRID)) / self::GRID;
+			$z = intdiv($i, self::GRID);
 			$ci = (int) $startChar + $i; // char index
 			$messages[$z] .= mb_chr($ci) . " ";
 		}
@@ -38,6 +41,9 @@ class DumpAZ {
 	public static function Permissions(): void {
 		$permissions = PermissionManager::getInstance()->getPermissions();
 		$file = fopen(Main::getInstance()->getDataFolder() . "/permissions.md", "w");
+		if ($file === false) {
+			throw new \RuntimeException("Unable to write permissions.md");
+		}
 		fwrite($file, "| Name | Description | Children | Permissibles |" . "\n");
 		fwrite($file, "| :--- | :---------- | :------- | :----------- |" . "\n");
 		foreach ($permissions as $permission) {
@@ -46,7 +52,7 @@ class DumpAZ {
 			$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
 
 			$childrens = $permission->getChildren();
-			$children = json_encode($childrens);
+			$children = json_encode($childrens, JSON_THROW_ON_ERROR);
 			$children = str_replace(",", "<br/>", $children);
 			$children = str_replace(["{", "}"], "", $children);
 			$children = str_replace('":', " : ", $children);
@@ -56,7 +62,7 @@ class DumpAZ {
 			}
 
 			$permissibles = $permission->getPermissibles();
-			$permissionle = json_encode($permissibles);
+			$permissionle = json_encode($permissibles, JSON_THROW_ON_ERROR);
 			fwrite($file, "| `" . $permission->getName() . "` | " . $descriptionString . " | " . $children . " | " . $permissionle . " |" . "\n");
 		}
 		fclose($file);
@@ -65,6 +71,9 @@ class DumpAZ {
 	public static function IdItem(): void {
 		$arr = [];
 		$file = fopen(Main::getInstance()->getDataFolder() . "/ID Items.md", "w");
+		if ($file === false) {
+			throw new \RuntimeException("Unable to write ID Items.md");
+		}
 		fwrite($file, "| ID:Meta | (TypeId:ComputeStateData)xCount tags:0xNamedTag |" . "\n");
 		fwrite($file, "| :------ | :---------------------------------------------- |" . "\n");
 		for ($id = -500; $id <= 1000; $id++) {

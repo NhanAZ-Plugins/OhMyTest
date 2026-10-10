@@ -6,7 +6,7 @@ namespace NhanAZ\OhMyTest;
 
 class TextAZ {
 
-	public static function center($str) {
+	public static function center(string $str): string {
 		$lines = explode("\n", $str);
 		$maxLen = max(array_map('strlen', $lines));
 		$result = '';

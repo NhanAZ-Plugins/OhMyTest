@@ -1,0 +1,34 @@
+# OhMyTest
+
+OhMyTest is an experimental PocketMine-MP plugin for inspecting worlds, items, permissions and glyphs. Its test features are disabled by default because some of them load worlds, generate terrain or change player state.
+
+## Requirements and compatibility
+
+- `plugin.yml` declares PocketMine-MP API `5.0.0`.
+- PHPStan at maximum level and isolated server boot have been checked against the Axolotl-PM revision pinned in the [build workflow](.github/workflows/build.yml). This does not establish compatibility with every 5.x release or with connected players.
+- Use a disposable server and world for experimental testing. Do not enable the features on a production world.
+
+## Configuration and commands
+
+The default [`config.yml`](resources/config.yml) contains `enable-experimental-features: false`. With that value, the plugin loads but does not register its test listeners, load additional worlds, generate spawn terrain or write documentation files.
+
+Set the value to `true` only in an isolated test server. Startup then writes `Glyph.md` and `permissions.md` to the plugin data directory. Players with `ohmytest.experimental`, which defaults to operators, can use these chat aliases:
+
+| Alias | Test action |
+|---|---|
+| `tp <world>` | Move to the safe spawn of a loaded world. |
+| `nbt` | Read the held item's `blockdata` string. |
+| `setnbt <key> <value>` | Set a string in the held item's custom block data. |
+| `egd` | Add a test item to the inventory. |
+| `vd` | Show the held item's name, count and type ID. |
+| `ws` | List loaded worlds. |
+| `fly` | Allow flight for the player. |
+| `pause`, `resume` | Broadcast a pause state packet. |
+
+Recognized aliases are removed from chat. Players without the permission receive a denial message. These are chat aliases for test use, not registered slash commands.
+
+## Build and support
+
+The [build workflow](.github/workflows/build.yml) runs PHPStan at maximum level, lints PHP and builds a PHAR with pinned [DevTools](https://github.com/NhanAZ/DevTools). It verifies the manifest, config, source and digest. The workflow does not publish a release artifact. The root [LICENSE](LICENSE) contains the project's GPL-3.0 terms.
+
+Report issues through [GitHub Issues](https://github.com/NhanAZ-Plugins/OhMyTest/issues) or [NhanAZ Discord](https://discord.gg/j2X83ujT6c).

@@ -3,4 +3,8 @@ name: OhMyTest
 version: 0.0.1
 main: NhanAZ\OhMyTest\Main
 api: 5.0.0
+permissions:
+  ohmytest.experimental:
+    default: op
+    description: Allow experimental test commands in chat
 ...

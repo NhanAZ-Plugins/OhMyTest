@@ -26,6 +26,7 @@ class ItemAZ {
 	// 	self::$members[$upperName] = $member;
 	// }
 
+	/** @param list<string> $stringToItemParserNames */
 	public static function registerSimpleItem(string $namespaceId, Item $item, array $stringToItemParserNames): void {
 		GlobalItemDataHandlers::getDeserializer()->map($namespaceId, fn () => clone $item);
 		GlobalItemDataHandlers::getSerializer()->map($item, fn () => new SavedItemData($namespaceId));
@@ -35,7 +36,7 @@ class ItemAZ {
 		}
 	}
 
-	public function simpleRegisterVanillaItem(string $displayName, $namespaceId): Item {
+	public function simpleRegisterVanillaItem(string $displayName, string $namespaceId): Item {
 		$item = new Item(new ItemIdentifier(ItemTypeIds::newId()), $displayName);
 		ItemAZ::getInstance()->registerSimpleItem($namespaceId, $item, [$namespaceId]);
 		return $item;
