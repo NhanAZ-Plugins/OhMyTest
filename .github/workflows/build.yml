@@ -62,7 +62,19 @@ jobs:
         env:
           PHAR_PATH: ${{ steps.build.outputs.phar }}
           PHAR_SHA256: ${{ steps.build.outputs.sha256 }}
+          BUILD_METADATA: ${{ steps.build.outputs.metadata }}
         run: |
           set -euo pipefail
           test "$(sha256sum "$PHAR_PATH" | cut -d ' ' -f 1)" = "$PHAR_SHA256"
           php -r '$p=new Phar(getenv("PHAR_PATH")); foreach(["plugin.yml","LICENSE","resources/config.yml","src/NhanAZ/OhMyTest/Main.php","src/NhanAZ/OhMyTest/DumpAZ.php"] as $f){if(!$p->offsetExists($f)){throw new RuntimeException("Missing PHAR entry: ".$f);}}'
+          cp "$BUILD_METADATA" build/build-metadata.json
+
+      - name: Upload verified experimental PHAR
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: OhMyTest-${{ github.sha }}
+          path: |
+            ${{ steps.build.outputs.phar }}
+            build/build-metadata.json
+          if-no-files-found: error
+          retention-days: 14
