@@ -45,7 +45,7 @@ jobs:
       - name: Lint experimental PHP source
         run: find src -name '*.php' -print0 | xargs -0 -n1 php -l
 
-      - name: Test chat alias permissions and arguments
+      - name: Test chat alias permissions and held-item NBT
         run: php tests/chat-alias.php
 
       - name: Analyze and build with pinned DevTools

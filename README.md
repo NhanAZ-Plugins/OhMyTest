@@ -27,7 +27,7 @@ Set the value to `true` only in an isolated test server. Startup then writes `Gl
 
 Recognized aliases are removed from chat. Players without the permission receive a denial message. These are chat aliases for test use, not registered slash commands.
 
-A source fixture checks alias recognition, permission denial, missing arguments and authorized flight with a synthetic player. An isolated Axolotl-PM server probe repeated those paths using a synthetic Player and a real `PlayerChatEvent`. Connected-player behavior remains unverified.
+A source fixture checks alias recognition, permission denial, missing arguments, authorized flight and held-item NBT writes and reads with a synthetic player and item. An isolated Axolotl-PM server probe covered the chat and flight paths using a synthetic Player and a real `PlayerChatEvent`; held-item NBT remains untested on the server and with a connected player.
 
 ## Build and support
 
