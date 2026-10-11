@@ -5,7 +5,7 @@ OhMyTest is an experimental PocketMine-MP plugin for inspecting worlds, items, p
 ## Requirements and compatibility
 
 - `plugin.yml` declares PocketMine-MP API `5.0.0`.
-- PHPStan at maximum level, isolated server boot and one offline headless Bedrock client session have been checked against the Axolotl-PM revision pinned in the [build workflow](.github/workflows/build.yml). This does not establish compatibility with every 5.x release or with the Bedrock game UI.
+- PHPStan at maximum level, isolated server boot and offline headless Bedrock client sessions have been checked against the Axolotl-PM revision pinned in the [build workflow](.github/workflows/build.yml). This does not establish compatibility with every 5.x release or with the Bedrock game UI.
 - Use a disposable server and world for experimental testing. Do not enable the features on a production world.
 
 ## Configuration and commands
@@ -27,7 +27,7 @@ Set the value to `true` only in an isolated test server. Startup then writes `Gl
 
 Recognized aliases are removed from chat. Players without the permission receive a denial message. These are chat aliases for test use, not registered slash commands.
 
-A source fixture checks alias recognition, permission denial, missing arguments, authorized flight and held-item NBT writes and reads with a synthetic player and item. An isolated Axolotl-PM server probe covered the chat and flight paths using a synthetic Player and a real `PlayerChatEvent`. A local offline headless Bedrock client joined the disposable server: `fly` returned the permission denial before the client was made an operator, then `egd`, `vd`, `setnbt blockdata client-probe` and `nbt` returned the expected item description and `client-probe` value. This checks the network chat and held-item NBT path; it does not verify the Bedrock game UI, every experimental action or world persistence.
+A source fixture checks alias recognition, permission denial, missing arguments, authorized flight and held-item NBT writes and reads with a synthetic player and item. An isolated Axolotl-PM server probe covered the chat and flight paths using a synthetic Player and a real `PlayerChatEvent`. A local offline headless Bedrock client received the `fly` permission denial before being made an operator. It then received the expected item description and `client-probe` value after `egd`, `vd`, `setnbt blockdata client-probe` and `nbt`. In a later session, `ws` listed `world`, `tp world` confirmed the move, `fly` enabled the `may_fly` and `flying` flags in ability packets, and `pause` and `resume` sent pause packets with states 1 and 0. These tests cover network chat, held-item NBT and the reported packets. They do not verify the Bedrock game UI, every experimental action or world persistence.
 
 ## Build and support
 
