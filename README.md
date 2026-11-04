@@ -1,6 +1,14 @@
 # OhMyTest
 
-OhMyTest is an experimental PocketMine-MP plugin for inspecting worlds, items, permissions and glyphs. Its test features are disabled by default because some of them load worlds, generate terrain or change player state.
+Experimental PocketMine-MP world and item diagnostics, disabled by default
+
+[![CI](https://github.com/NhanAZ-Plugins/OhMyTest/actions/workflows/build.yml/badge.svg)](https://github.com/NhanAZ-Plugins/OhMyTest/actions/workflows/build.yml)
+[![License](https://img.shields.io/github/license/NhanAZ-Plugins/OhMyTest)](https://github.com/NhanAZ-Plugins/OhMyTest/blob/master/LICENSE)
+[![Discord](https://img.shields.io/discord/986553214889517088?label=Discord&logo=discord&logoColor=white&color=5865F2)](https://discord.gg/j2X83ujT6c)
+
+## Overview
+
+This is an experimental repository. Review its documented limitations before using it on a live server.
 
 ## Requirements and compatibility
 
