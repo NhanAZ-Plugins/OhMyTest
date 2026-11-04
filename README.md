@@ -6,9 +6,6 @@ Experimental PocketMine-MP world and item diagnostics, disabled by default
 [![License](https://img.shields.io/github/license/NhanAZ-Plugins/OhMyTest)](https://github.com/NhanAZ-Plugins/OhMyTest/blob/master/LICENSE)
 [![Discord](https://img.shields.io/discord/986553214889517088?label=Discord&logo=discord&logoColor=white&color=5865F2)](https://discord.gg/j2X83ujT6c)
 
-## Overview
-
-This is an experimental repository. Review its documented limitations before using it on a live server.
 
 ## Requirements and compatibility
 
