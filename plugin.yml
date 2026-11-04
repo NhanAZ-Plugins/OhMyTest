@@ -3,6 +3,7 @@ name: OhMyTest
 version: 0.0.1
 main: NhanAZ\OhMyTest\Main
 api: 5.0.0
+authors: ["NhanAZ"]
 permissions:
   ohmytest.experimental:
     default: op
