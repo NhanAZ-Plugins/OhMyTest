@@ -38,7 +38,7 @@ A three-boot check used the same verified PHAR and player account. The player re
 
 ## Build and support
 
-The [build workflow](.github/workflows/build.yml) runs PHPStan at maximum level, lints PHP, checks the chat alias fixture and builds a PHAR with pinned [DevTools](https://github.com/NhanAZ/DevTools). It verifies the manifest, config, source and digest, then uploads the checked PHAR as a temporary CI artifact. This is not a stable release. The root [LICENSE](LICENSE) contains the project's GPL-3.0 terms.
+The [build workflow](.github/workflows/build.yml) runs PHPStan at maximum level, lints PHP, checks the chat alias fixture and builds a PHAR with pinned [DevTools](https://github.com/AxolotlBucketLabs/DevTools). It verifies the manifest, config, source and digest, then uploads the checked PHAR as a temporary CI artifact. This is not a stable release. The root [LICENSE](LICENSE) contains the project's GPL-3.0 terms.
 
 Report issues through [GitHub Issues](https://github.com/NhanAZ-Plugins/OhMyTest/issues) or [NhanAZ Discord](https://discord.gg/j2X83ujT6c).
 
