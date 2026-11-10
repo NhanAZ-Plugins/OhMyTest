@@ -48,9 +48,9 @@ jobs:
       - name: Test chat alias permissions and held-item NBT
         run: php tests/chat-alias.php
 
-      - name: Analyze and build with pinned DevTools
+      - name: Analyze and build with latest DevTools
         id: build
-        uses: AxolotlBucketLabs/DevTools@v3 # v3.0.0
+        uses: AxolotlBucketLabs/DevTools@latest
         with:
           project: .
           output: build
